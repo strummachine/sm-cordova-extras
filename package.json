@@ -1,6 +1,6 @@
 {
-  "name": "cordova-plugin-sm-extras",
-  "version": "0.4.0",
+  "name": "@strummachine/sm-cordova-extras",
+  "version": "0.5.0",
   "description": "SM Extras for Cordova",
   "cordova": {
     "id": "cordova-plugin-sm-extras",
@@ -8,6 +8,9 @@
       "ios",
       "android"
     ]
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "author": "Luke Abbott"
 }
