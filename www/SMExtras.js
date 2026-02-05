@@ -55,3 +55,15 @@ exports.requestAppReview = function(success, error) {
     exec(success, error, "SMExtras", "requestAppReview", []);
   }
 };
+
+exports.getTextScaleFactor = function(success, error) {
+  if ( !/Android/i.test(navigator.userAgent) ) {
+    exec(success, error, "SMExtras", "getTextScaleFactor", []);
+  }
+};
+
+exports.watchTextScaleFactor = function(success, error) {
+  if ( !/Android/i.test(navigator.userAgent) ) {
+    exec(success, error, "SMExtras", "watchTextScaleFactor", []);
+  }
+};

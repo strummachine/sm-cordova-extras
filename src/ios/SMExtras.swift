@@ -5,6 +5,18 @@ import AVFoundation
 @objc(SMExtras) class SMExtras : CDVPlugin {
 
     var buildInfo: [String:String?]?
+    private var textScaleCallbackId: String?
+    private var textScaleObserver: NSObjectProtocol?
+
+    private static let defaultBodyPointSize: Double = {
+        let defaultTraits = UITraitCollection(preferredContentSizeCategory: .large)
+        return Double(UIFont.preferredFont(forTextStyle: .body, compatibleWith: defaultTraits).pointSize)
+    }()
+
+    private func currentTextScaleFactor() -> Double {
+        let bodySize = UIFont.preferredFont(forTextStyle: .body).pointSize
+        return Double(bodySize) / SMExtras.defaultBodyPointSize
+    }
 
     @objc(getBuildInfo:) func getBuildInfo(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async {
@@ -110,6 +122,46 @@ import AVFoundation
                 CDVPluginResult(status: CDVCommandStatus_OK),
                 callbackId: command.callbackId
             )
+        }
+    }
+
+    @objc(getTextScaleFactor:) func getTextScaleFactor(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async {
+            self.commandDelegate!.send(
+                CDVPluginResult(
+                    status: CDVCommandStatus_OK,
+                    messageAs: self.currentTextScaleFactor()
+                ),
+                callbackId: command.callbackId
+            )
+        }
+    }
+
+    @objc(watchTextScaleFactor:) func watchTextScaleFactor(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async {
+            // Remove any previous observer
+            if let observer = self.textScaleObserver {
+                NotificationCenter.default.removeObserver(observer)
+            }
+
+            self.textScaleCallbackId = command.callbackId
+
+            // Send the current value immediately
+            let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.currentTextScaleFactor())
+            result?.setKeepCallbackAs(true)
+            self.commandDelegate!.send(result, callbackId: command.callbackId)
+
+            // Observe changes
+            self.textScaleObserver = NotificationCenter.default.addObserver(
+                forName: UIContentSizeCategory.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self, let callbackId = self.textScaleCallbackId else { return }
+                let result = CDVPluginResult(status: CDVCommandStatus_OK, messageAs: self.currentTextScaleFactor())
+                result?.setKeepCallbackAs(true)
+                self.commandDelegate!.send(result, callbackId: callbackId)
+            }
         }
     }
 
