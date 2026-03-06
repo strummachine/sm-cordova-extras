@@ -1,6 +1,6 @@
 {
   "name": "@strummachine/sm-cordova-extras",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "SM Extras for Cordova",
   "cordova": {
     "id": "cordova-plugin-sm-extras",
