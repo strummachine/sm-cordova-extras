@@ -2,6 +2,10 @@ var exec = require('cordova/exec');
 
 exports.apiVersion = 2;
 
+function zeroWindowControlInsets() {
+  return { top: 0, left: 0, bottom: 0, right: 0 };
+}
+
 exports.getBuildInfo = function (success, error) {
   exec(success, error, "SMExtras", 'getBuildInfo', []);
 };
@@ -65,5 +69,21 @@ exports.getTextScaleFactor = function(success, error) {
 exports.watchTextScaleFactor = function(success, error) {
   if ( !/Android/i.test(navigator.userAgent) ) {
     exec(success, error, "SMExtras", "watchTextScaleFactor", []);
+  }
+};
+
+exports.getWindowControlInsets = function(success, error) {
+  if ( !/Android/i.test(navigator.userAgent) ) {
+    exec(success, error, "SMExtras", "getWindowControlInsets", []);
+  } else if (success) {
+    success(zeroWindowControlInsets());
+  }
+};
+
+exports.watchWindowControlInsets = function(success, error) {
+  if ( !/Android/i.test(navigator.userAgent) ) {
+    exec(success, error, "SMExtras", "watchWindowControlInsets", []);
+  } else if (success) {
+    success(zeroWindowControlInsets());
   }
 };
